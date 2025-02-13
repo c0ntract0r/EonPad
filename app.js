@@ -1,12 +1,20 @@
 const express = require('express')
-const app = express()
 require('dotenv').config();
 const connectDB = require('./config/connectDB')
 
-const PORT = process.env.PORT || 3001
-console.log(PORT);
+const app = express();
+const PORT = process.env.PORT || 3001;
 
-console.log(process.env.MONGO_URI);
+
+app.use(express.json());
+
+
+app.use('/login', require('./routes/login'));
+app.use('/register', require('./routes/register'));
+app.use('/notes', require('./routes/notes'));
+
+
+
 
 const SERVER_START = async () => {
     try
