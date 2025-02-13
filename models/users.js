@@ -9,9 +9,11 @@ const UserSchema = new mongoose.Schema ({
     // Later to add a damn validator here
     password: { type:String, minLength:8, required: true},
     createdAt: { type:Date, default: Date.now() },
-    tags: { type: mongoose.Schema.Types.ObjectId, ref: 'Tags' },
+    tags: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Tags' }],
     folders: [{
-        name: String,
+        type: String,
         folderId: mongoose.Schema.Types.ObjectId
     }]
 });

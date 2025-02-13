@@ -6,7 +6,7 @@ const NotesSchema = new mongoose.Schema({
     createdAt: { type:Date, default: Date.now() },
     ModifiedAt: { type:Date, default: Date.now() },
     in_folder: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
-    tags: { type: mongoose.Schema.Types.ObjectId, ref: 'Tags' },
+    tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tags' }],
 });
 
 module.exports = mongoose.model('Notes', NotesSchema);
