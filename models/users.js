@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema ({
     first_name: { type:String, required:true },
     last_name: { type:String, required:true },
     // might as well here add validator
-    username: { type:String, minLength:5, maxLength: 30, required: true },
+    username: { type:String, minLength:5, maxLength: 30, required: true, unique: true },
     // Later to add a damn validator here
     password: { type:String, required: true},
     createdAt: { type:Date, default: Date.now() },
@@ -25,5 +25,10 @@ UserSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
     next();
 })
+
+// Compare provided password here
+UserSchema.methods.comparePassword = async function(candidatePassword){
+    return await bcrypt.compare(candidatePassword, this.password);
+}
 
 module.exports = mongoose.model('Users', UserSchema);
