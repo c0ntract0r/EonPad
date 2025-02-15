@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 // I don't want to store email. User forgot password? I don't care
 const UserSchema = new mongoose.Schema ({
@@ -7,7 +8,7 @@ const UserSchema = new mongoose.Schema ({
     // might as well here add validator
     username: { type:String, minLength:5, maxLength: 30, required: true },
     // Later to add a damn validator here
-    password: { type:String, minLength:8, required: true},
+    password: { type:String, required: true},
     createdAt: { type:Date, default: Date.now() },
     tags: [{ 
         type: mongoose.Schema.Types.ObjectId, 
@@ -17,5 +18,12 @@ const UserSchema = new mongoose.Schema ({
         folderId: mongoose.Schema.Types.ObjectId
     }]
 });
+
+// Hash/salt password before saving to database
+UserSchema.pre('save', async function (next) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+})
 
 module.exports = mongoose.model('Users', UserSchema);
