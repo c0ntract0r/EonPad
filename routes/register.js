@@ -1,8 +1,9 @@
 const express = require('express');
 const registerRouter = express.Router();
+const registrationHandler = require('../controllers/auth/register')
 
 registerRouter.route('/')
     .get((req, res) => { res.send('Testing register GET route...') })
-    .post((req, res) => [ res.send('Testing register POST route') ]);
+    .post(registrationHandler.RegistrationHandler);
 
 module.exports = registerRouter;
