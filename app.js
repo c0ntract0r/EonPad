@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 
 
-app.use('/login', require('./routes/login'));
+app.use('/login', require('./routes/auth'));
 app.use('/register', require('./routes/register'));
 app.use('/notes', require('./routes/notes'));
 
