@@ -14,7 +14,11 @@ const loginHandler = async (req, res) => {
         // right, this is for debugging for now
         return res.status(StatusCodes.UNAUTHORIZED).json({ msg: 'Incorrect password!' });
     }
-    return res.status(StatusCodes.OK).json({ msg: 'Authentication successful!' });
+    const token = user.createJWT();
+    return res.status(StatusCodes.OK).json({ msg: 'Authentication successful', usr: {
+        user_name: user.username, user_token: token}})
 }
+
+
 
 module.exports = { loginHandler };
