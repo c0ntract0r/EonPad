@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // I don't want to store email. User forgot password? I don't care
 const UserSchema = new mongoose.Schema ({
@@ -25,6 +26,13 @@ UserSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
     next();
 })
+
+// Sign JWT token on user login. NOT on registration
+UserSchema.methods.createJWT = function() {
+    return jwt.sign({ userID: this._id, username: this.username }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_LIFETIME
+    })
+};
 
 // Compare provided password here
 UserSchema.methods.comparePassword = async function(candidatePassword){
