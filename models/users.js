@@ -1,11 +1,18 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
 // Subdocuments for folders
 const folderSchema = new mongoose.Schema({
-    name: { typoe:String,required:true },
+    name: { type:String,required:true },
     children: [{ type: this }],
+});
+
+// subdocuments for refresh tokens
+const RefreshTokenSchema = new mongoose.Schema({
+    token: { type: String, required: true },
+    expirationDate: { type:Date, required: true },
+    createdAt: { type:Date, default: Date.now(),
+    revoked: { type: Boolean, default: false }}
 });
 
 // I don't want to store email. User forgot password? I don't care
@@ -16,6 +23,7 @@ const UserSchema = new mongoose.Schema ({
     username: { type:String, minLength:5, maxLength: 30, required: true, unique: true },
     // Later to add a damn validator here
     password: { type:String, required: true},
+    refreshTokenDocs: [RefreshTokenSchema],
     createdAt: { type:Date, default: Date.now() },
     tags: [{ 
         type: mongoose.Schema.Types.ObjectId, 
@@ -28,12 +36,6 @@ UserSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
     next();
 })
-
-UserSchema.methods.createJWT = function() {
-    return jwt.sign({ userID: this._id, username: this.username }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_LIFETIME
-    })
-};
 
 UserSchema.methods.comparePassword = async function(candidatePassword){
     return await bcrypt.compare(candidatePassword, this.password);
