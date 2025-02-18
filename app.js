@@ -14,8 +14,7 @@ app.use(express.json());
 app.use('/login', require('./routes/auth'));
 app.use('/register', require('./routes/register'));
 // to be protected
-app.use('/notes', authenticateUser , require('./routes/notes'));
-
+app.use('/notes', authenticateUser, require('./routes/notes'));
 
 
 
