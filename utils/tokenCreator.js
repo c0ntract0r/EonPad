@@ -19,7 +19,7 @@ const genToken = (user, type='a') => {
     const options = {
         issuer: "c0ntract0r software",
         subject: user,
-        expiresIn: timeExpire
+        expiresIn: parseInt(timeExpire),
     };
     
     return jwt.sign({ "username": user }, secret_key , options);
