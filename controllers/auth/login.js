@@ -15,14 +15,10 @@ const loginHandler = async (req, res) => {
         // right, this is for debugging for now
         return res.status(StatusCodes.UNAUTHORIZED).json({ msg: 'Incorrect password!' });
     }
-    console.log(user);
     const accessToken = genToken(user.username, 'a');
     const refreshToken = genToken(user.username, 'r');
-    const expirationDate = Date.now() + 150000;
-
-    console.log(expirationDate);
+    const expirationDate = Date.now() + parseInt(process.env.JWT_R_TTL);
     await Users.updateOne(
-        {_id: user._id},
         {
             $push: {
                 refreshTokenDocs: {
@@ -32,8 +28,10 @@ const loginHandler = async (req, res) => {
             }
         }
     );
+    // send refresh cookie as HTTPOnly - may expect date
+    res.cookie('refresh_jwt', refreshToken, { httpOnly: true, maxAge: 5*60*1000 });
     return res.status(StatusCodes.OK).json({ msg: 'Authentication successful', usr: {
-        user_name: user.username, user_token: {accessToken, refreshToken}}})
+                user_name: user.username, user_token: {accessToken, refreshToken}}})
 }
 
 
