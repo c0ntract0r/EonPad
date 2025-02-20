@@ -7,14 +7,6 @@ const folderSchema = new mongoose.Schema({
     children: [{ type: this }],
 });
 
-// subdocuments for refresh tokens
-const RefreshTokenSchema = new mongoose.Schema({
-    token: { type: String, required: true },
-    expirationDate: { type:Date, required: true },
-    createdAt: { type:Date, default: Date.now(),
-    revoked: { type: Boolean, default: false }}
-});
-
 // I don't want to store email. User forgot password? I don't care
 const UserSchema = new mongoose.Schema ({
     first_name: { type:String, required:true },
@@ -23,7 +15,8 @@ const UserSchema = new mongoose.Schema ({
     username: { type:String, minLength:5, maxLength: 30, required: true, unique: true },
     // Later to add a damn validator here
     password: { type:String, required: true},
-    refreshTokenDocs: [RefreshTokenSchema],
+    // array here is good, so that we can enter from multiple devices
+    refreshToken: [{ type: String, default: 'empty' }],
     createdAt: { type:Date, default: Date.now() },
     tags: [{ 
         type: mongoose.Schema.Types.ObjectId, 
