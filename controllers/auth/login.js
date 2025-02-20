@@ -12,6 +12,7 @@ const loginHandler = async (req, res) => {
     const user = await Users.findOne({ username });
     if (!user) { return res.status(StatusCodes.FORBIDDEN).json({ msg: 'Forbidden!' }) };
     const passCorrect = await user.comparePassword(password);
+    console.log(passCorrect);
     if (!passCorrect) {
         // right, this is for debugging for now
         return res.status(StatusCodes.UNAUTHORIZED).json({ msg: 'Incorrect password!' });
@@ -27,7 +28,7 @@ const loginHandler = async (req, res) => {
             ? user.refreshToken
             : user.refreshToken.filter(rt => rt !== cookies.jwt);
     
-    if (cookies?.refresh_jwt) res.clearCookie('refresh_jwt', refreshToken, { httpOnly: true });
+    if (cookies?.refresh_jwt) res.clearCookie('refresh_jwt', newRefreshToken, { httpOnly: true });
 
     user.refreshToken = [...newRefreshTokenArray, newRefreshToken];
     await user.save();
