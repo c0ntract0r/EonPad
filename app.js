@@ -15,7 +15,8 @@ app.use(cookieParser());
 // authentication related routes
 app.use('/login', require('./routes/auth'));
 app.use('/register', require('./routes/register'));
-app.use('/refresh', require('./routes/refresh'))
+app.use('/refresh', require('./routes/refresh'));
+app.use('/logout', require('./routes/logout'));
 
 // to be protected
 app.use('/notes', authenticateUser, require('./routes/notes'));
