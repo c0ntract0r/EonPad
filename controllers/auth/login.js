@@ -4,6 +4,7 @@ const genToken = require('../../utils/tokenCreator');
 require('dotenv').config();
 
 const loginHandler = async (req, res) => {
+    const cookies = req.cookies;
     const { username, password } = req.body;
     if (!username || !password) {
         return res.send('Please send valid username and password!');
@@ -16,22 +17,24 @@ const loginHandler = async (req, res) => {
         return res.status(StatusCodes.UNAUTHORIZED).json({ msg: 'Incorrect password!' });
     }
     const accessToken = genToken(user.username, 'a');
-    const refreshToken = genToken(user.username, 'r');
-    const expirationDate = Date.now() + parseInt(process.env.JWT_R_TTL);
-    await Users.updateOne(
-        {
-            $push: {
-                refreshTokenDocs: {
-                    token: refreshToken,
-                    expirationDate: new Date(expirationDate)
-                }
-            }
-        }
-    );
-    // send refresh cookie as HTTPOnly - may expect date
-    res.cookie('refresh_jwt', refreshToken, { httpOnly: true, maxAge: 5*60*1000 });
+    const newRefreshToken = genToken(user.username, 'r');
+
+    console.log(`This is the access token: ${accessToken}`);
+    console.log(`This is the refresh token: ${newRefreshToken}`);
+
+    const newRefreshTokenArray =
+        !cookies?.refresh_jwt
+            ? user.refreshToken
+            : user.refreshToken.filter(rt => rt !== cookies.jwt);
+    
+    if (cookies?.refresh_jwt) res.clearCookie('refresh_jwt', refreshToken, { httpOnly: true });
+
+    user.refreshToken = [...newRefreshTokenArray, newRefreshToken];
+    await user.save();
+    // send refresh cookie as HTTPOnly - may expect date. TO BE FIXED IN PRODUCTION
+    res.cookie('refresh_jwt', newRefreshToken, { httpOnly: true, maxAge: 5*60*1000 });
     return res.status(StatusCodes.OK).json({ msg: 'Authentication successful', usr: {
-                user_name: user.username, user_token: {accessToken, refreshToken}}})
+                user_name: user.username, user_token: {accessToken}}})
 }
 
 
