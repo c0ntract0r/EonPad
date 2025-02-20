@@ -2,13 +2,14 @@ const jwt = require('jsonwebtoken');
 const Users = require('../../models/users');
 
 const handleLogout = async (req, res) => {
-    // on client, also delete the access token
+    // on client, also delete the access 
     const cookies = req.cookies;
-    if (!cookies?.refresh_jwt) return res.sendStatus(204);
+    if (!cookies?.refresh_jwt) return res.sendStatus(401);
     const refreshToken = cookies.refresh_jwt;
     // is refresh token in database
-    const refreshTokenDB = await Users.findOne({ refreshToken }).exec();
-    if (!refreshTokenDB) {
+    const foundUser = await Users.findOne({ refreshToken }).exec();
+    console.log(foundUser);
+    if (!foundUser) {
         res.clearCookie('refresh_jwt', refreshToken, { httpOnly: true });
         return res.sendStatus(204)
     }
