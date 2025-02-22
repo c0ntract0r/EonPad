@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // authentication related routes
-app.use('/login', require('./routes/auth'));
+app.use('/login', require('./routes/login'));
 app.use('/register', require('./routes/register'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
