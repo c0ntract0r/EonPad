@@ -13,6 +13,7 @@ const verifyJWT = async (req, res, next) => {
         req.user = { user: payload.userID, name: payload.username };
         next();
     } catch(err) {
+        if (err.name === 'TokenExpiredError') return res.status(StatusCodes.FORBIDDEN).json({msg: 'Token expired!' });
         return res.status(StatusCodes.FORBIDDEN).json({ msg: 'Invalid token!' });
     }
 }
