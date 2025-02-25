@@ -9,17 +9,18 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
-
 app.use(cookieParser());
 
 // authentication related routes
-app.use('/login', require('./routes/login'));
-app.use('/register', require('./routes/register'));
-app.use('/refresh', require('./routes/refresh'));
-app.use('/logout', require('./routes/logout'));
+app.use('/login', require('./routes/auth/login'));
+app.use('/register', require('./routes/auth/register'));
+app.use('/refresh', require('./routes/auth/refresh'));
+app.use('/logout', require('./routes/auth/logout'));
 
 // to be protected
-app.use('/notes', authenticateUser, require('./routes/notes'));
+app.use(authenticateUser);
+app.use('/notes', require('./routes/api/notes'));
+app.use('/folders', require('./routes/api/folders'));
 
 
 
@@ -27,7 +28,7 @@ const SERVER_START = async () => {
     try
     {
         await connectDB(process.env.MONGO_URI);
-        app.listen(PORT, () => { console.log(`Successfully connected to DB!\nServer is listening on port 3000...`) });
+        app.listen(PORT, () => { console.log(`Successfully connected to DB!\nServer is listening on port ${PORT}...`) });
     } catch (err) {
         console.log(err);
     }
