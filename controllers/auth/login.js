@@ -17,8 +17,8 @@ const loginHandler = async (req, res) => {
         // right, this is for debugging for now
         return res.status(StatusCodes.UNAUTHORIZED).json({ msg: 'Incorrect password!' });
     }
-    const accessToken = genToken(user.username, 'a');
-    const newRefreshToken = genToken(user.username, 'r');
+    const accessToken = genToken(user._id, user.username ,'a');
+    const newRefreshToken = genToken(user._id, user.username, 'r');
 
     const newRefreshTokenArray =
         !cookies?.refresh_jwt

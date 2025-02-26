@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 // get user from request, and time according to needs. put a type to use(either a=access or r=refresh)
-const genToken = (user, type='a') => {
+const genToken = (userID, user, type='a') => {
 
     let timeExpire = null;
 
@@ -19,7 +19,7 @@ const genToken = (user, type='a') => {
         expiresIn: eval(timeExpire),
     };
 
-    return jwt.sign({ "username": user }, process.env.JWT_SECRET , options);
+    return jwt.sign({ "user_id": userID }, process.env.JWT_SECRET , options);
 }
 
 module.exports = genToken;
