@@ -1,3 +1,3 @@
 # EonPad
 
-Currently in development phase. Deployed locally, runs like garbage.
+Currently in development phase. Deployed locally, currently runs like garbage.
