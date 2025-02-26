@@ -1,6 +1,7 @@
 {
   "name": "eonpad",
   "version": "0.1.1",
+  "type": "commonjs",
   "description": "Eonpad is a simple hierarchial note-taking application",
   "main": "app.js",
   "scripts": {
