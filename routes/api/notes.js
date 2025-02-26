@@ -1,9 +1,10 @@
 const express = require('express');
+const noteHandler = require('../../controllers/api/notes');
 const notesRouter = express.Router();
 
 notesRouter.route('/')
-    .get((req, res) => { res.send('Get all existing notes') })
-    .post((req, res) => { res.send('Creating new note') });
+    .get(noteHandler.getAllNotes)
+    .post(noteHandler.createNewNote);
 
 notesRouter.route('/:id')
     .get((req, res) => { res.send('Getting single note from DB') })
