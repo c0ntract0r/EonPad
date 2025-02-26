@@ -4,13 +4,15 @@ const { StatusCodes } = require('http-status-codes');
 
 const verifyJWT = async (req, res, next) => {
     const authHeader = req.headers.authorization;
+    console.log(req);
     if (!authHeader || !authHeader.startsWith('Bearer')) {
         return res.status(StatusCodes.NOT_FOUND).json({ msg: 'No auth header!' });
     }
     const token = authHeader.split(' ')[1];
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = { user: payload.userID, name: payload.username };
+        console.log(payload);
+        req.user = { user_id: payload.user_id, username: payload.sub };
         next();
     } catch(err) {
         if (err.name === 'TokenExpiredError') return res.status(StatusCodes.FORBIDDEN).json({msg: 'Token expired!' });
