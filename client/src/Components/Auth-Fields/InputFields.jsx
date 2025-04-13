@@ -1,11 +1,16 @@
+import { useState } from 'react';
+import './inputFields.css'
+
 const InputFields = (props) => {
-    const { fields } = props;
-    return fields.map((field) => {
-        return <div>
-            <input key={field.id} placeholder={field.placeholder} name={field.name} type={field.type} />
-            <label htmlFor={field.label}>{field.label}</label>
+    const {label, onChange, name, type, handleBlur, error, id, inputProps} = props;
+
+    return (
+        <div className="form-group">
+            <label>{label}</label>
+            <input {...inputProps} type={type} name={name} onBlur={handleBlur} onChange={onChange}/>
+            {<span>{error}</span>}
         </div>
-    })
+    )
 }
 
 export default InputFields;

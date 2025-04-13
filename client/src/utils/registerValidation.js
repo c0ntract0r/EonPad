@@ -5,7 +5,7 @@ import constants from './constants';
 const errorMessages = {
     firstLastName: [ 'cannot be empty',
                 'should be at most 35 characters long', 
-                'can only include letters, spaces, hyphens(-), apostrophes(\'), dots(.) and hyphens(-)'],
+                'only letters, spaces, hyphens(-), apostrophes(\'), dots(.) and hyphens(-) allowed'],
     username: [ 'Username cannot be empty',
                 'Username must be between 4 and 24 characters long.',
                 'Username can contain only letters, numbers and underscores'],
@@ -23,12 +23,12 @@ const errorMessages = {
 let userSchema = object({
     firstName: string()
                .required(`First name ${errorMessages.firstLastName[0]}`)
-               .max(35, `First name ${errorMessages.firstLastName[1]}`)
-               .matches(constants.RE_NAME_SURNAME, `First name ${errorMessages.firstLastName[2]}`),
+               .max(35, `${errorMessages.firstLastName[1]}`)
+               .matches(constants.RE_NAME_SURNAME, `${errorMessages.firstLastName[2]}`),
     lastName: string()
                .required(`Last name ${errorMessages.firstLastName[0]}`)
                .max(35, `Last name ${errorMessages.firstLastName[1]}`)
-               .matches(constants.RE_NAME_SURNAME, `Last name ${errorMessages.firstLastName[2]}`),
+               .matches(constants.RE_NAME_SURNAME, `${errorMessages.firstLastName[2]}`),
     username: string()
               .required(errorMessages.username[0])
               .min(4, errorMessages.username[1])
@@ -40,7 +40,6 @@ let userSchema = object({
               .max(32, errorMessages.password[1])
               .matches(constants.RE_PASSWORD, errorMessages.password[2]),
     confirmPassword: string()
-              .required(errorMessages.confirmPassword[0])
               .oneOf([ref('password'), null], errorMessages.confirmPassword[1])
     });
 
