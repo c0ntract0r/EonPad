@@ -1,14 +1,16 @@
 const express = require('express')
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
-
 const connectDB = require('./config/connectDB')
 const authenticateUser = require('./middlewares/jwtVerification');
+const { logger } = require('./middlewares/logger');
 
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// MIDDLEWARE
+app.use(logger);
 app.use(express.json());
 app.use(cookieParser());
 
