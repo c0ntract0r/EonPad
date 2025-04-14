@@ -19,12 +19,13 @@ body {
     box-shadow: 0 4px 10px rgba(96, 96, 96, 0.1);
     width: 100%;
     max-width: 400px;
+    justify-content: center;
+    align-items: center;
     padding: 2rem;
 }
 
 .login-title {
-    text-align: center;
-    margin-top: 2rem;
+    margin-top: 5rem;
     margin-bottom: 1.5rem;
     color: #2c3e50;
     font-family: "Inter", sans-serif;
