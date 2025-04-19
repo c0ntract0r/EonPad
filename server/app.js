@@ -4,19 +4,18 @@ const cookieParser = require('cookie-parser');
 const connectDB = require('./config/connectDB')
 const authenticateUser = require('./middlewares/jwtVerification');
 const { logger } = require('./middlewares/logger');
-
 const cors = require('cors');
+const corsOptions = require('./config/corsOptions');
+
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // MIDDLEWARE
 app.use(logger);
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-
-app.use(cors({
-    origin: "http://localhost:5173",
-}));
 
 // authentication related routes
 app.use('/login', require('./routes/auth/login'));
@@ -38,6 +37,7 @@ const SERVER_START = async () => {
         await connectDB(process.env.MONGO_URI);
         app.listen(PORT, () => { console.log(`Successfully connected to DB!\nServer is listening on port ${PORT}...`) });
     } catch (err) {
+        console.log("I am here!");
         console.log(err);
     }
 }
