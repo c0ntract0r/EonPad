@@ -6,8 +6,8 @@ const JoiRegErrs = require('../../utils/JoiRegErr');
 
 //validate each of the fields separately
 const registrationValidationHandler = (req, res) => {
-    // Validate data before passing it down to backend - to /validatefield
 
+    // Validate data before passing it down to backend - to /validatefield
     const regSchema = Joi.object({
         firstName: Joi.string().pattern(new RegExp(constants.RE_NAME_SURNAME, "i")).min(2).max(30).trim().required().messages(JoiRegErrs('First name', 2, 30)),
         lastName: Joi.string().pattern(new RegExp(constants.RE_NAME_SURNAME, "i")).min(2).max(45).trim().required().messages(JoiRegErrs('Last name', 2, 45)),

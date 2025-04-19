@@ -31,7 +31,7 @@ const loginHandler = async (req, res) => {
     await user.save();
     // send refresh cookie as HTTPOnly - may expect date. TO BE FIXED IN PRODUCTION
     res.cookie('refresh_jwt', newRefreshToken, { httpOnly: true, maxAge: 5*60*1000 });
-    return res.status(StatusCodes.OK).json({ msg: 'Authentication successful', usr: {
+    return res.status(200).json({ msg: 'Authentication successful', usr: {
                 user_name: user.username, user_token: {accessToken}}})
 }
 

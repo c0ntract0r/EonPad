@@ -23,7 +23,6 @@ const refreshTokenHandler = async (req, res) => {
                 const targetUser = await Users.findOne({ username: decoded.username }).exec();
                 targetUser.refreshToken = [];
                 const result = await targetUser.save();
-                console.log(result);
             }
         )
         return res.sendStatus(403);

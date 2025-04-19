@@ -9,7 +9,7 @@ const LOGPATH = path.join(__dirname, '..', 'logs');
 
 // REUSABLE LOG GENERATOR FUNCTION
 const logEvents = async (message, logFileName) => {
-    const dateTime = `${format(new Date(), '[dd-MM-yyyy]\t[HH:mm:ss]')}`;
+    const dateTime = `${format(new Date(), '[dd-MM-yyyy HH:mm:ss]')}`;
     const logItem = `${dateTime}\t${uuid()}\t${message}\n`;
     const FILEPATH = path.join(LOGPATH, logFileName);
 

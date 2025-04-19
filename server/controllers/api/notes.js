@@ -2,7 +2,7 @@ const Notes = require('../../models/notes');
 const Users = require('../../models/users');
 
 const createNewNote = async (req, res) => {
-    const { noteTitle, noteBody } = req.body;
+    const { noteTitle, noteBody, in_folder } = req.body;
     const foundUser = req.user.user_id;
     if (!noteTitle || !noteBody) res.json({msg: 'OOPSIE! YOU MADE A FUCKIE WUCKIE!'});
     try {
@@ -11,7 +11,8 @@ const createNewNote = async (req, res) => {
         const note = new Notes({
             title: noteTitle,
             body: noteBody,
-            user: foundUser
+            user: foundUser,
+            in_folder: in_folder
         });
         await note.save();
         res.status(201).json({ message: 'Note created!', note });

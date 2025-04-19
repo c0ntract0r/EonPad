@@ -1,12 +1,33 @@
-/*
-    RE_NAME_SURNAME: Ensure that name and surname only contain case-insensitive letters, spaces, commas, apostrophes, or hyphens
-    RE_USER: Ensure, that username first char should be upper/lowercase, after that, any combination of letters and numbers is allowed,
-             and also _ is allowed as a username. I MAY CONSIDER USERNAME and first and last name limitations silly, but who knows
-    RE_PASSWORD: Ensure, that the password has at least 1 uppercase, lowercase, special, and number characters
-*/
-
-module.exports = Object.freeze({
+/* Thank you to olasunkanmi-SE for this idea */
+const HTTP_RESPONSE_CODE = {
+    NOT_FOUND: 404,
+    CREATED: 201,
+    CONFLICT: 409,
+    SUCCESS: 200,
+    UNAUTHORIZED: 401,
+    SERVER_ERROR: 500,
+    BAD_REQUEST: 400
+};
+const APP_ERROR_MESSAGE = {
+    serverError: "Something went wrong, try again later",
+    createdUser: "User created successfully",
+    objectCreated: "Object created successfully",
+    userAuthenticated: "User Authenticated successfully",
+    invalidCredentials: "Invalid username or password",
+    noValidUser: "Sorry, User not found. May be permanently deleted",
+    badRequest: "Request format is invalid: Field empty or does not meet requirements."
+};
+const REGULAR_EXPRESSIONS = Object.freeze({
     RE_NAME_SURNAME: /^[a-z ,.'-]+$/,
     RE_USER: /^[a-zA-Z][a-zA-Z0-9]*(?:_[a-zA-Z0-9]+)*$/,
     RE_PASSWORD: /^(?=.*[A-Z])(?=.*[a-z])(?=.*[~`!@#$%^&*()_+\-=\[\]{}\\|:;"'<,>.?/])(?=.*[0-9])./
-})
+});
+
+
+
+
+module.exports = { 
+    REGULAR_EXPRESSIONS,
+    HTTP_RESPONSE_CODE,
+    APP_ERROR_MESSAGE
+ }

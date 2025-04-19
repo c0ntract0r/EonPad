@@ -10,7 +10,6 @@ const verifyJWT = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(payload);
         req.user = { user_id: payload.user_id, username: payload.sub };
         next();
     } catch(err) {
