@@ -22,7 +22,6 @@ app.use('/login', require('./routes/auth/login'));
 app.use('/register', require('./routes/auth/register'));
 app.use('/refresh', require('./routes/auth/refresh'));
 app.use('/logout', require('./routes/auth/logout'));
-app.use('/validate', require('./routes/auth/fieldValidate'));
 
 // to be protected
 app.use(authenticateUser);
