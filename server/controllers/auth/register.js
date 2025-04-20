@@ -4,32 +4,6 @@ const Joi = require('joi');
 const constants = require('../../utils/constants');
 const JoiRegErrs = require('../../utils/JoiRegErr');
 
-//validate each of the fields separately
-const registrationValidationHandler = (req, res) => {
-
-    // Validate data before passing it down to backend - to /validatefield
-    const regSchema = Joi.object({
-        firstName: Joi.string().pattern(new RegExp(constants.RE_NAME_SURNAME, "i")).min(2).max(30).trim().required().messages(JoiRegErrs('First name', 2, 30)),
-        lastName: Joi.string().pattern(new RegExp(constants.RE_NAME_SURNAME, "i")).min(2).max(45).trim().required().messages(JoiRegErrs('Last name', 2, 45)),
-        userName: Joi.string().pattern(constants.RE_USER).min(4).max(34).trim().required().messages(JoiRegErrs('username', 4, 34)),
-        pass: Joi.string().pattern(constants.RE_PASSWORD).min(8).max(24).trim().required().messages(JoiRegErrs('password', 8, 24)),
-        confirmPassword: Joi.string().required().valid(Joi.ref("pass")).messages({
-            "any.only": "Passwords must match",
-            "string.empty": "Confirm password is required",
-        }),
-    });
-
-    const {firstName, lastName, username, password} = req.body;
-    const { value, error } = regSchema.validate({ firstName: firstName, lastName: lastName, userName: username, pass: password  });
-
-    if (error) {
-        console.log(error);
-        return res.status(400).json({error: error.details[0].message, errType: error.details[0].type});
-    }
-
-
-}
-
 // full registration handler if everything is alright
 const RegistrationHandler = async (req, res) => {
 
@@ -88,4 +62,4 @@ const RegistrationHandler = async (req, res) => {
     }
 }
 
-module.exports = { RegistrationHandler, registrationValidationHandler };
+module.exports = { RegistrationHandler };
