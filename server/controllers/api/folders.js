@@ -7,34 +7,48 @@ const getAllFolders = async (req, res) => {
 }
 
 const createFolder = async (req, res) => {
-    // parentFolder is optional, as folderName may be a root folder
-    const { folderName, parentFolder} = req.body;
-    if (!folderName || folderName === '') return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'msg': APP_ERROR_MESSAGE.badRequest });
+    const { folderName, parentFolderName} = req.body;
+    let parentFolderId = null;
+
+    if (!folderName || typeof folderName !== 'string' || folderName.trim() === '') 
+            return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'msg': APP_ERROR_MESSAGE.badRequest });
+    
     // in case no user was found, or some problem occured
     const reqUser = await Users.findById(req.user.user_id);
     if (!reqUser) { return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'msg': APP_ERROR_MESSAGE.noValidUser })};
 
-    const newFolder = new Folders ({
-        name: folderName,
-        user: reqUser,
-    });
-
-    // I need to check, if there are folders with repeating name in same name
-
-    await newFolder.save();
-
+    const parentFolder = parentFolderName === 'null' || !parentFolderName ? null : parentFolderName;
+    // check if the provided parent exists
     if (parentFolder) {
         const getParentFolder = await Folders.findOne({ name: parentFolder });
-        // create the folder in root, even if no parentID was found
         if (!getParentFolder) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'msg': `No Parent folder found with name ${parentFolder}...` });
-        // the newly created child folder
-        const childFolder = await Folders.findOne({ name: folderName });
-        getParentFolder.children.push(childFolder._id);
+        parentFolderId = getParentFolder._id;
+    }
 
-        childFolder.parentId = getParentFolder._id;
+    try {
+        const newFolder = new Folders ({
+            name: folderName,
+            user: reqUser,
+            parentId: parentFolderId
+        });
 
-        await childFolder.save();
-        await getParentFolder.save();
+        await newFolder.save();
+
+        if (parentFolderId) {
+            const getParentFolder = await Folders.findById(parentFolderId);
+            const childFolder = await Folders.findOne({ name: folderName })
+            getParentFolder.children.push(childFolder._id);
+
+            await getParentFolder.save();
+        }
+
+    } catch (error) {
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue)[0];
+            return res.status(HTTP_RESPONSE_CODE.CONFLICT).json({
+                msg: `Folder with name ${error.keyValue[field]} already exists. Please Try something else.`
+            })
+        }
     }
     return res.status(HTTP_RESPONSE_CODE.CREATED).json({ 'msg': APP_ERROR_MESSAGE.objectCreated });
 }
