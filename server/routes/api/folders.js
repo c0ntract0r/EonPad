@@ -6,7 +6,9 @@ folderRouter.route('/')
     .get(folderHandler.getAllFolders)
     .post(folderHandler.createFolder);
 
-folderRouter.route('/:id')
+// : - Named URL Parameters
+folderRouter.route('/:folderId')
+    .get(folderHandler.getFolder)
     .delete(folderHandler.deleteFolder)
     .put(folderHandler.renameFolder);
 
