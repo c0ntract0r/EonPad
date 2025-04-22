@@ -98,45 +98,40 @@ const renameFolder = async (req, res) => {
 
 // TO-DO
 const deleteFolder = async (req, res) => {
-    const {folderName, parentFolderName, deleteContent} = req.body;
-    let parentFolderId = null;
-
-    // in case, no folder is provided
-    if (!folderName || typeof folderName !== 'string' || folderName.trim() === '') 
-        return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'msg': APP_ERROR_MESSAGE.badRequest });
-
-    // in case no user was found, or some problem occured
     const reqUser = await Users.findById(req.user.user_id);
-    if (!reqUser) { return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'msg': APP_ERROR_MESSAGE.noValidUser })};
 
-    // normalize parent folder here, and if provided and not found, throw an error
-    const parentFolder = parentFolderName === 'null' || !parentFolderName ? null : parentFolderName;
-    if (parentFolder) {
-        const getParentFolder = await Folders.findOne({ name: parentFolder });
-        if (!getParentFolder) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'msg': `No Parent folder found with name ${parentFolder}...` });
-        parentFolderId = getParentFolder._id;
-    }
-
+    if (!reqUser) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND)
+                            .json({ 'success': false, 'msg': APP_ERROR_MESSAGE.badRequest, 'data': null });
+    
     try {
-        // 2 POSSIBLE SCENARIOS of parentID: null, or belongs to a folder
+        // HAVE SOMETHING TO DO RIGHT. HERE.
+        const { folderId } = req.params;
+
+        const reqFolder = await Folders.findOne({ user: req.user.user_id, _id: folderId }).select('_id parentId children').exec();
+
+        /* 
+            If not to delete content, then: Move child folders(and their contents) and notes 1 level up, and remove that child from parent 
+            TO-DO: After dealing with notes, return here
+        */
+        if ((typeof delContentFlag !== 'boolean') || (!delContentFlag) || delContentFlag === false) {
+            // if folder has child folders
+            if (reqFolder.children.length) {
+                for (const child of reqFolder.children) {
+                    console.log('I am executing...');
+                    const childFolder = await Folders.findById(child).select('parentId').exec();
+                    childFolder.parentId = reqFolder.parentId;
+
+                    await childFolder.save();
+                }
 
 
-        const childFolder = await Folders.findOne({ name: folderName });
-
-        if (parentFolderId) {
-            const getParentFolder = await Folders.findOne({ name: parentFolder })
-            // You are my child NO MORE
-            getParentFolder.children.pull({ _id: childFolder._id });
-        };
-
-        await Folders.findByIdAndDelete(childFolder._id);
-
+            }
+            return res.status(HTTP_RESPONSE_CODE.OK).json({'success': 'relative', 'msg': 'test', 'data': reqFolder});
+        }
+        
     } catch (error) {
-        // I don't know what error can be 
-        console.log(`Here must be an error that I don't know about it yet. ${error}`);
-        return res.status(HTTP_RESPONSE_CODE.SERVER_ERROR).json({ 'msg': `Some unknown server error...` });
+        return res.status(HTTP_RESPONSE_CODE.SERVER_ERROR).json({ 'success': false, 'msg': APP_ERROR_MESSAGE.serverError, 'data': null });
     }
-    return res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ 'msg': APP_SUCCESS_MESSAGE.objectDeleted });
 }
 
 // TO-DO
