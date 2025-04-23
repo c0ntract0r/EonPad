@@ -96,7 +96,6 @@ const renameFolder = async (req, res) => {
 
 }
 
-// TO-DO
 const deleteFolder = async (req, res) => {
     const reqUser = await Users.findById(req.user.user_id);
 
@@ -108,29 +107,46 @@ const deleteFolder = async (req, res) => {
         const { folderId } = req.params;
 
         const reqFolder = await Folders.findOne({ user: req.user.user_id, _id: folderId }).select('_id parentId children').exec();
+        // Get parent folder if it's not null for further operations
+        const parentFolder = (reqFolder.parentId !== null) ? await Folders.findById(reqFolder.parentId) : null ;
 
-        /* 
-            If not to delete content, then: Move child folders(and their contents) and notes 1 level up, and remove that child from parent 
-            TO-DO: After dealing with notes, return here
-        */
-        if ((typeof delContentFlag !== 'boolean') || (!delContentFlag) || delContentFlag === false) {
-            // if folder has child folders
+        /* TO-DO: After dealing with notes, return here */
+
+        // If not to delete content, then: Move child folders(and their contents) and notes 1 level up, and remove that child from parent 
+        if ((typeof delContentFlag !== 'boolean') || (!delContentFlag) || (delContentFlag === false)) {
+
+            // if not null, remove the corresponding child folder from 
+            if (parentFolder) {
+                parentFolder.children.pull(folderId);
+                await parentFolder.save();
+            }
+            // if folder has child folders, update their parent Ids, and update parent folder's children, if not NULL
             if (reqFolder.children.length) {
                 for (const child of reqFolder.children) {
-                    console.log('I am executing...');
                     const childFolder = await Folders.findById(child).select('parentId').exec();
                     childFolder.parentId = reqFolder.parentId;
 
+                    if (parentFolder) {
+                        parentFolder.children.push(child);
+                    }
                     await childFolder.save();
                 }
-
-
+                if (parentFolder) {
+                    await parentFolder.save();
+                }
             }
-            return res.status(HTTP_RESPONSE_CODE.OK).json({'success': 'relative', 'msg': 'test', 'data': reqFolder});
+
+            await Folders.findByIdAndDelete(folderId);
+
+            return res.status(HTTP_RESPONSE_CODE.OK).json({'success': 'relative', 'msg': 'Folder deleted. Child objects remain', 'data': reqFolder});
         }
+
+        
+
         
     } catch (error) {
-        return res.status(HTTP_RESPONSE_CODE.SERVER_ERROR).json({ 'success': false, 'msg': APP_ERROR_MESSAGE.serverError, 'data': null });
+        // return res.status(HTTP_RESPONSE_CODE.SERVER_ERROR).json({ 'success': false, 'msg': APP_ERROR_MESSAGE.serverError, 'data': null });
+        return res.status(HTTP_RESPONSE_CODE.SERVER_ERROR).json({ 'success': false, 'msg': `Error encountered: ${error}`, 'data': null });
     }
 }
 
