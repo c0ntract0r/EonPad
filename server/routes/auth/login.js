@@ -1,9 +1,10 @@
 const express = require('express');
 const loginRouter = express.Router();
 const loginHandler  = require('../../controllers/auth/login');
+const loginLimiter = require('../../middlewares/authLimiter');
 
+// LoginLimiter is specific for login route
 loginRouter.route('/')
-    .get((req, res) => { res.send('Testing login GET...') })
-    .post(loginHandler.loginHandler);
+    .post(loginLimiter, loginHandler.loginHandler);
 
 module.exports = loginRouter;
