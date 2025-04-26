@@ -25,10 +25,20 @@ const logEvents = async (message, logFileName) => {
 
 
 // WHAT to log - Excessive logging can impact performance
-const logger = (req, res, next) => {
-    // TO MAKE MORE MEANINGFUL LATER
-    logEvents(`${req.method}\t${req.url}\t${req.headers.origin}`, 'reqlog.log');
+const errLogger = (req, res, next) => {
+
+    const originalEnd = res.end;
+    res.end = function (chunk, encoding) {
+        res.end = originalEnd;
+        res.end(chunk, encoding);
+
+        const statusCode = res.statusCode;
+        if (statusCode >=400) {
+            const message = `${req.method}\t${req.baseUrl}\t${statusCode}\t${res.statusMessage}\t\t${req.headers.origin || 'Unknown origin'}`;
+            logEvents(message, 'errLog.log');
+        }
+    }
     next();
 }
 
-module.exports = { logEvents, logger };
+module.exports = { logEvents, errLogger };
