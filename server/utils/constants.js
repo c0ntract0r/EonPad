@@ -13,18 +13,19 @@ const HTTP_RESPONSE_CODE = {
 
 const APP_SUCCESS_MESSAGE = {
     objectFound: "found successfully",
-    objectDeleted: "Object deleted successfully",
-    objectCreated: "Object created successfully",
-    createdUser: "User created successfully",
+    objectDeleted: "deleted successfully",
+    objectCreated: "created successfully",
     userAuthenticated: "User Authenticated successfully",
 }
 
 const APP_ERROR_MESSAGE = {
     serverError: "Something went wrong, try again later",
-    invalidCredentials: "Invalid username or password",
+    invalidCredentials: "Invalid username or password.",
     unauthorized: "Operation not permitted.",
     noValidUser: "Sorry, User not found. May be permanently deleted",
-    badRequest: "Request format is invalid: Field empty or does not meet requirements."
+    badRequest: "Request is invalid: ",
+    notFound: "Not found. Please try again",
+    conflictError: "already exists. Please try another"
 };
 const REGULAR_EXPRESSIONS = Object.freeze({
     RE_NAME_SURNAME: /^[a-z ,.'-]+$/,

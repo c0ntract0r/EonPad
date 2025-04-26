@@ -1,6 +1,4 @@
 // Helper function for Joi validation of registering
-
-// currently works a bit like shit, this function should be corrected later
 const JoiRegErrs = (fieldName, min, max) => {
     let retObject= {
         'string.empty': `${fieldName} cannot be empty`,

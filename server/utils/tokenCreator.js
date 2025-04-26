@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
 // get user from request, and time according to needs. put a type to use(either a=access or r=refresh)
 const genToken = (userID, user, type='a') => {
