@@ -1,34 +1,34 @@
 const express = require('express')
-require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/connectDB')
 const authenticateUser = require('./middlewares/jwtVerification');
-const { logger } = require('./middlewares/logger');
+const { errLogger } = require('./middlewares/logger');
+const { jsonErrorHandler } = require('./middlewares/errHandler');
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
 
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+
 // MIDDLEWARE
-app.use(logger);
-app.use(cors(corsOptions));
+app.use(errLogger);
 app.use(express.json());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 
 // authentication related routes
-app.use('/login', require('./routes/auth/login'));
-app.use('/register', require('./routes/auth/register'));
-app.use('/refresh', require('./routes/auth/refresh'));
-app.use('/logout', require('./routes/auth/logout'));
+app.use('/api/v1/register', require('./routes/auth/register'));
+app.use('/api/v1/login', require('./routes/auth/login'));
+app.use('/api/v1/refresh', require('./routes/auth/refresh'));
+app.use('/api/v1/logout', require('./routes/auth/logout'));
 
 // to be protected
 app.use(authenticateUser);
 app.use('/api/v1/notes', require('./routes/api/notes'));
 app.use('/api/v1/folders', require('./routes/api/folders'));
-
-
 
 const SERVER_START = async () => {
     try
@@ -36,9 +36,11 @@ const SERVER_START = async () => {
         await connectDB(process.env.MONGO_URI);
         app.listen(PORT, () => { console.log(`Successfully connected to DB!\nServer is listening on port ${PORT}...`) });
     } catch (err) {
-        console.log("I am here!");
         console.log(err);
     }
 }
+
+// This error handler is the last middleware
+app.use(jsonErrorHandler);
 
 SERVER_START();
