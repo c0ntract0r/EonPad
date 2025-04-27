@@ -1,13 +1,15 @@
 /* Thank you to olasunkanmi-SE for this idea */
 const HTTP_RESPONSE_CODE = {
     OK: 200,
-    NOT_FOUND: 404,
-    CREATED: 201,
-    CONFLICT: 409,
     SUCCESS: 200,
+    CREATED: 201,
+    NO_CONTENT: 204,
+    BAD_REQUEST: 400,
     UNAUTHORIZED: 401,
+    FORBIDDEN: 403,
+    NOT_FOUND: 404,
+    CONFLICT: 409,
     SERVER_ERROR: 500,
-    BAD_REQUEST: 400
 };
 
 
@@ -16,6 +18,7 @@ const APP_SUCCESS_MESSAGE = {
     objectDeleted: "deleted successfully",
     objectCreated: "created successfully",
     userAuthenticated: "User Authenticated successfully",
+    userLogOut: "User Logged out successfully"
 }
 
 const APP_ERROR_MESSAGE = {
@@ -25,7 +28,8 @@ const APP_ERROR_MESSAGE = {
     noValidUser: "Sorry, User not found. May be permanently deleted",
     badRequest: "Request is invalid: ",
     notFound: "Not found. Please try again",
-    conflictError: "already exists. Please try another"
+    conflictError: "already exists. Please try another",
+    forbiddenError: "Can't access resource. Operation forbidden."
 };
 const REGULAR_EXPRESSIONS = Object.freeze({
     RE_NAME_SURNAME: /^[a-z ,.'-]+$/,
