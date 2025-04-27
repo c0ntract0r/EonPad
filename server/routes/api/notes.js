@@ -4,11 +4,14 @@ const notesRouter = express.Router();
 
 notesRouter.route('/')
     .get(noteHandler.getAllNotes)
-    .post(noteHandler.createNewNote);
+    .post(noteHandler.createNote);
 
-notesRouter.route('/:id')
-    .get((req, res) => { res.send('Getting single note from DB') })
-    .patch((req, res) => { res.send('In future, update existing note') })
-    .delete((req, res) => { res.send('Delete single note') });
+notesRouter.route('/:noteId')
+    .get(noteHandler.getNote)
+    .patch(noteHandler.updateNote)
+    .delete(noteHandler.deleteNote);
+
+notesRouter.route('/:noteId/move')
+    .patch(noteHandler.moveNote)
 
 module.exports = notesRouter;
