@@ -1,5 +1,4 @@
 const { format } = require('date-fns');
-// v7 as uuid - UNIX Epoch time-based UUID
 const { v7:uuid } = require('uuid');
 const fs = require('fs');
 const fsPromises = require('fs').promises;

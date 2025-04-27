@@ -14,7 +14,6 @@ const verifyJWT = async (req, res, next) => {
         process.env.JWT_SECRET,
         (err, decoded) => {
             if (err) return res.status(HTTP_RESPONSE_CODE.FORBIDDEN).json({ success: false, msg: APP_ERROR_MESSAGE.forbiddenError });
-            console.log(decoded);
             req.user = { user_id: decoded.user_id, username: decoded.username };
             next();
         }
