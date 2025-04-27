@@ -67,7 +67,7 @@ const RegistrationHandler = async (req, res) => {
                 errors
             });
         }
-        return res.status(HTTP_RESPONSE_CODE.SERVER_ERROR);
+        return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST);
     }
 }
 

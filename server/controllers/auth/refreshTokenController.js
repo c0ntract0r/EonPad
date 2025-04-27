@@ -1,55 +1,60 @@
 const jwt = require('jsonwebtoken');
 const Users = require('../../models/users');
-require('dotenv').config();
 const genToken = require('../../utils/tokenCreator');
+const { HTTP_RESPONSE_CODE, APP_ERROR_MESSAGE, APP_SUCCESS_MESSAGE } = require('../../utils/constants');
+
 
 const refreshTokenHandler = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.refresh_jwt) return res.sendStatus(401);
+    if (!cookies?.refresh_jwt) return res.status(HTTP_RESPONSE_CODE.UNAUTHORIZED).json({ 'success': false, msg: APP_ERROR_MESSAGE.unauthorized, data: [] });
     const refreshToken = cookies.refresh_jwt;
-    // Find user by his refresh token. Is this the best way?
-    const foundUser = await Users.findOne(
-        { "refreshTokenDocs.token": cookies.refresh_jwt },
-        { "refreshTokenDocs.$": 1}).exec();
+    // delete existing cookie, because new one will be issued anyways
+    res.clearCookie('refresh_jwt', { httpOnly: true });
+    const foundUser = await Users.findOne({ refreshToken }).exec();
 
     // In case of detecting refresh token reuse
     if (!foundUser) {
         jwt.verify(
             refreshToken,
-            process.env.JWT_REFRESH_SECRET,
+            process.env.JWT_SECRET,
             async (err, decoded) => {
-                if (err) return res.sendStatus(403);    // Forbidden
+                if (err) return res.status(HTTP_RESPONSE_CODE.FORBIDDEN).json({'success': false, msg: APP_ERROR_MESSAGE.forbiddenError, data: []});
                 // reuse attempt
                 const targetUser = await Users.findOne({ username: decoded.username }).exec();
                 targetUser.refreshToken = [];
-                const result = await targetUser.save();
+                await targetUser.save();
             }
         )
-        return res.sendStatus(403);
+        return res.status(HTTP_RESPONSE_CODE.FORBIDDEN).json({'success': false, msg: APP_ERROR_MESSAGE.forbiddenError, data: []});
     }
 
     // reissue a new refresh token
     const newRefreshTokenArray = foundUser.refreshToken.filter(rt => rt !== refreshToken);
 
-    jwt.verify(refreshToken,
-        process.env.JWT_REFRESH_SECRET,
+    jwt.verify(
+        refreshToken,
+        process.env.JWT_SECRET,
         async (err, decoded) => {
             // got an expired token
             if (err) {
                 foundUser.refreshToken = [...newRefreshTokenArray];
-                const result = await foundUser.save();
+                await foundUser.save();
             }
-            if (err || foundUser.username !== decoded.username) return res.sendStatus(403);
+            if (err || foundUser.username !== decoded.username) 
+                return res.status(HTTP_RESPONSE_CODE.FORBIDDEN).json({'success': false, msg: APP_ERROR_MESSAGE.forbiddenError, data: []});
             // If refresh token was still valid
-            const newAccessToken = genToken(foundUser.username, 'a');
-            const newRefreshToken = genToken(foundUser.username, 'r');
+            const newAccessToken = genToken(foundUser._id, foundUser.username, 'a');
+            const newRefreshToken = genToken(foundUser._id ,foundUser.username, 'r');
             foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
-            const result = await foundUser.save();
+            await foundUser.save();
 
             // create the cookie as well. TBC in production
             res.cookie('refresh_jwt', newRefreshToken, { httpOnly: true, maxAge: 5*60*1000 });
 
-            res.json({ newAccessToken });
+            // Finalia, send a la refresha tokenita
+            return res.status(HTTP_RESPONSE_CODE.OK).json({ 'success': true, 'msg': APP_SUCCESS_MESSAGE.userAuthenticated, data: {
+                'Access_token': newAccessToken
+            } });
         }
     );
 }

@@ -22,13 +22,23 @@ const loginHandler = async (req, res) => {
     const accessToken = genToken(user._id, user.username ,'a');
     const newRefreshToken = genToken(user._id, user.username, 'r');
 
-    const newRefreshTokenArray =
+    let newRefreshTokenArray =
         !cookies?.refresh_jwt
             ? user.refreshToken
             : user.refreshToken.filter(rt => rt !== cookies.jwt);
     
     // clear any existing refresh tokens. After frontend, need to check if can login from multiple places
-    if (cookies?.refresh_jwt) res.clearCookie('refresh_jwt', newRefreshToken, { httpOnly: true });
+    if (cookies?.refresh_jwt) {
+
+        const refreshToken = cookies.refresh_jwt;
+        const foundToken = await Users.findOne({ refreshToken }).exec();
+
+        if (!foundToken) {
+            newRefreshTokenArray = [];
+        }
+
+        res.clearCookie('refresh_jwt', newRefreshToken, { httpOnly: true });
+    }
 
     user.refreshToken = [...newRefreshTokenArray, newRefreshToken];
     await user.save();
