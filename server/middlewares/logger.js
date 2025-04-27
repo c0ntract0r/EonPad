@@ -34,7 +34,7 @@ const errLogger = (req, res, next) => {
 
         const statusCode = res.statusCode;
         if (statusCode >=400) {
-            const message = `${req.method}\t${req.baseUrl}\t${statusCode}\t${res.statusMessage}\t\t${req.headers.origin || 'Unknown origin'}`;
+            const message = `${req.method}\t${req.baseUrl}\t${req.url}\t${statusCode}\t${res.statusMessage}\t\t${req.headers.origin || 'Unknown origin'}`;
             logEvents(message, 'errLog.log');
         }
     }

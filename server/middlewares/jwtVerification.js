@@ -1,21 +1,24 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const { HTTP_RESPONSE_CODE, APP_ERROR_MESSAGE } = require('../utils/constants');
 
 const verifyJWT = async (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    console.log(req);
-    if (!authHeader || !authHeader.startsWith('Bearer')) {
-        return res.status(404).json({ msg: 'No auth header!' });
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+
+    // in case no authorization token is provided, or is invalid form
+    if (!authHeader?.startsWith('Bearer ')) {
+        return res.status(HTTP_RESPONSE_CODE.UNAUTHORIZED).json({ msg: APP_ERROR_MESSAGE.unauthorized });
     }
     const token = authHeader.split(' ')[1];
-    try {
-        const payload = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = { user_id: payload.user_id, username: payload.sub };
-        next();
-    } catch(err) {
-        if (err.name === 'TokenExpiredError') return res.status(403).json({msg: 'Token expired!' });
-        return res.status(401).json({ msg: 'Invalid token!' });
-    }
+    jwt.verify(
+        token,
+        process.env.JWT_SECRET,
+        (err, decoded) => {
+            if (err) return res.status(HTTP_RESPONSE_CODE.FORBIDDEN).json({ success: false, msg: APP_ERROR_MESSAGE.forbiddenError });
+            console.log(decoded);
+            req.user = { user_id: decoded.user_id, username: decoded.username };
+            next();
+        }
+    )
 }
 
 module.exports = verifyJWT;
