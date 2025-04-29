@@ -182,19 +182,33 @@ const deleteFolder = async (req, res) => {
 
             const folder = await Folders.findById(targetFolder).exec();
 
-            if (folder && folder.children && folder.children.length > 0) {
+            const childFolderIds = folder.children || [];
+            if (childFolderIds.length > 0) {
+                for (const childId of childFolderIds) {
+                    await recursiveDelete(childId);
+                }
+            }
+
+            /* if (folder && folder.children && folder.children.length > 0) {
                 for (const childId of folder.children) {
                     await recursiveDelete(childId);
                 }
             };
+            */
 
             if (folder.notes && folder.notes.length > 0) {
                 for (const noteId of folder.notes) {
-                    await Notes.findOneAndDelete({ user: req.user.user_id, _id: noteId });
+                    try {
+                        await Notes.findOneAndDelete({ user: req.user.user_id, _id: noteId });
+                        console.log(`Deleted note: ${noteId}`);
+                    } catch (error) {
+                        console.log(`Error deleting note ${noteId}: ${error}`);
+                    }
                 }
             }
 
             await Folders.findByIdAndDelete(targetFolder);
+            console.log(`Deleted folder: ${targetFolder}`);
         }
 
         // if a parent folder exists, clean that up
