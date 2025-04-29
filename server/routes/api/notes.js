@@ -11,7 +11,7 @@ notesRouter.route('/:noteId')
     .patch(noteHandler.updateNote)
     .delete(noteHandler.deleteNote);
 
-notesRouter.route('/:noteId/move')
+notesRouter.route('/move/:noteId')
     .patch(noteHandler.moveNote)
 
 module.exports = notesRouter;

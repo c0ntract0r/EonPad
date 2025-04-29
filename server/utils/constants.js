@@ -16,6 +16,7 @@ const APP_SUCCESS_MESSAGE = {
     objectFound: "found successfully",
     objectDeleted: "deleted successfully",
     objectCreated: "created successfully",
+    objectUpdated: "updated successfully",
     userAuthenticated: "User Authenticated successfully",
     userLogOut: "User Logged out successfully"
 }

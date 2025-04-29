@@ -11,6 +11,6 @@ const UserSchema = new mongoose.Schema ({
     // The notes belonging to the user
     notes: { type: mongoose.Schema.Types.ObjectId, ref: 'Notes' },
     folders: { type: mongoose.Schema.Types.ObjectId, ref: 'Folders' }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Users', UserSchema);

@@ -11,7 +11,7 @@ folderRouter.route('/:folderId')
     .delete(folderHandler.deleteFolder)
     .patch(folderHandler.renameFolder);
 
-folderRouter.route('/:folderId/move')
+folderRouter.route('/move/:folderId')
     .patch(folderHandler.moveFolder);
 
 module.exports = folderRouter;
