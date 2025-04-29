@@ -167,6 +167,11 @@ const deleteFolder = async (req, res) => {
                     const childNote = await Notes.findOne({ user: req.user.user_id, _id: note }).exec();
                     childNote.parentFolder = reqFolder.parentId;
 
+                    if (parentFolder) {
+                        parentFolder.notes.push(childNote._id);
+                        await parentFolder.save();
+                    }
+
                     childNote.save();
                 }
             }
@@ -189,18 +194,10 @@ const deleteFolder = async (req, res) => {
                 }
             }
 
-            /* if (folder && folder.children && folder.children.length > 0) {
-                for (const childId of folder.children) {
-                    await recursiveDelete(childId);
-                }
-            };
-            */
-
             if (folder.notes && folder.notes.length > 0) {
                 for (const noteId of folder.notes) {
                     try {
                         await Notes.findOneAndDelete({ user: req.user.user_id, _id: noteId });
-                        console.log(`Deleted note: ${noteId}`);
                     } catch (error) {
                         console.log(`Error deleting note ${noteId}: ${error}`);
                     }
@@ -208,7 +205,6 @@ const deleteFolder = async (req, res) => {
             }
 
             await Folders.findByIdAndDelete(targetFolder);
-            console.log(`Deleted folder: ${targetFolder}`);
         }
 
         // if a parent folder exists, clean that up
