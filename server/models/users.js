@@ -8,9 +8,8 @@ const UserSchema = new mongoose.Schema ({
     password: { type:String, required: true},
     refreshToken: [{ type: String, default: 'empty' }],
     createdAt: { type:Date, default: Date.now() },
-    // The notes belonging to the user
-    notes: { type: mongoose.Schema.Types.ObjectId, ref: 'Notes' },
-    folders: { type: mongoose.Schema.Types.ObjectId, ref: 'Folders' }
+    // notes: { type: mongoose.Schema.Types.ObjectId, ref: 'Notes' },
+    // folders: { type: mongoose.Schema.Types.ObjectId, ref: 'Folders' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Users', UserSchema);
