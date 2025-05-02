@@ -12,7 +12,7 @@ const FolderSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// ensure no folder to be with repeating name exist in the same level
-FolderSchema.index({ name: 1, parentId: 1 }, { unique: true })
+// ensure no folder to be with repeating name exist in the same level per unique user
+FolderSchema.index({ name: 1, parentId: 1, user: 1 }, { unique: true })
 
 module.exports = mongoose.model('Folders', FolderSchema);
