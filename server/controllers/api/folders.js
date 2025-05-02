@@ -3,41 +3,6 @@ const Folders = require('../../models/folders');
 const Notes = require('../../models/notes');
 const { HTTP_RESPONSE_CODE, APP_ERROR_MESSAGE, APP_SUCCESS_MESSAGE } = require('../../utils/constants');
 
-const getFolder = async (req, res) => {
-    const reqUser = await Users.findById(req.user.user_id);
-
-    if (!reqUser) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND)
-                            .json({ 'success': false, 'msg': APP_ERROR_MESSAGE.badRequest, 'data': null });
-    
-    try {
-
-        const { folderId } = req.params;
-        const folder = await Folders.findOne({user: reqUser, _id: folderId}).select('_id name children notes parentId').exec();
-
-        return res.status(HTTP_RESPONSE_CODE.OK).json({'success': true, 'msg': `Folder ${APP_SUCCESS_MESSAGE.objectFound}`, 'data': folder});
-
-    } catch (error) {
-        if (error.name === "CastError") return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false, 'msg': `Folder ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
-        return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'success': false, 'msg': `Unknown error: ${error}`, 'data': null });
-    }
-}
-
-const getAllFolders = async (req, res) => {
-    // Get user ID from the token
-    const reqUser = await Users.findById(req.user.user_id);
-    if (!reqUser)  return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST)
-                    .json({ 'success': false, 'msg': APP_ERROR_MESSAGE.badRequest, 'data': null });
-
-    try {
-
-        const allFolders = await Folders.find({ user: req.user.user_id }).select('_id name children notes parentId').exec();
-        return res.status(HTTP_RESPONSE_CODE.OK).json({ 'success': true, 'msg': `Folder list ${APP_SUCCESS_MESSAGE.objectFound}`, 'data': allFolders });
-
-    } catch (error) {
-        return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'success': false, 'msg': `Unknown error: ${error}`, 'data': null });
-    }
-    
-}
 
 // Create a folder, optionally creating it as a child one 
 const createFolder = async (req, res) => {
@@ -67,7 +32,7 @@ const createFolder = async (req, res) => {
             parentId: parentFolderId
         });
 
-        await newFolder.save();
+        const result = await newFolder.save();
 
         if (parentFolderId) {
             const getParentFolder = await Folders.findById(parentFolderId);
@@ -76,7 +41,7 @@ const createFolder = async (req, res) => {
 
             await getParentFolder.save();
         }
-
+        return res.status(HTTP_RESPONSE_CODE.CREATED).json({ 'success': true, 'msg': `Folder ${folderName} ${APP_SUCCESS_MESSAGE.objectCreated}`, 'data': result });
     } catch (error) {
         if (error.code === 11000) {
             const field = Object.keys(error.keyValue)[0];
@@ -86,12 +51,47 @@ const createFolder = async (req, res) => {
                 data: []
             })
         }
-
         // Generic error message as well, like others
         return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'success': false, 'msg': `Error: ${error}`, 'data': null });
     }
-    return res.status(HTTP_RESPONSE_CODE.CREATED).json({ 'success': true, 'msg': `folder ${folderName} ${APP_SUCCESS_MESSAGE.objectCreated}` });
 }
+
+
+const getAllFolders = async (req, res) => {
+    // Get user ID from the token
+    const reqUser = await Users.findById(req.user.user_id);
+    if (!reqUser)  return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+                    .json({ 'success': false, 'msg': APP_ERROR_MESSAGE.badRequest, 'data': null });
+
+    try {
+
+        const allFolders = await Folders.find({ user: req.user.user_id }).select('_id name children notes parentId').exec();
+        return res.status(HTTP_RESPONSE_CODE.OK).json({ 'success': true, 'msg': `Folder list ${APP_SUCCESS_MESSAGE.objectFound}`, 'data': allFolders });
+
+    } catch (error) {
+        return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'success': false, 'msg': `Unknown error: ${error}`, 'data': null });
+    }
+}
+
+const getFolder = async (req, res) => {
+    const reqUser = await Users.findById(req.user.user_id);
+
+    if (!reqUser) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND)
+                            .json({ 'success': false, 'msg': APP_ERROR_MESSAGE.badRequest, 'data': null });
+    
+    try {
+
+        const { folderId } = req.params;
+        const folder = await Folders.findOne({user: reqUser, _id: folderId}).select('_id name children notes parentId').exec();
+
+        return res.status(HTTP_RESPONSE_CODE.OK).json({'success': true, 'msg': `Folder ${APP_SUCCESS_MESSAGE.objectFound}`, 'data': folder});
+
+    } catch (error) {
+        if (error.name === "CastError") return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false, 'msg': `Folder ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
+        return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'success': false, 'msg': `Unknown error: ${error}`, 'data': null });
+    }
+}
+
 
 const renameFolder = async (req, res) => {
 

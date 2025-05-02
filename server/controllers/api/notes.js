@@ -33,11 +33,12 @@ const createNote = async (req, res) => {
 
             await parentResult.save();
         }
+        
+        return res.status(HTTP_RESPONSE_CODE.CREATED).json({ 'success': true, 'msg': `Note ${noteTitle} ${APP_SUCCESS_MESSAGE.objectCreated}`, 'data': result });
 
     } catch(error) {
-        return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'success': false, 'msg': `Error: ${error}`, 'data': null });
+        return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({ 'success': false, 'msg': `Error: ${error}`, 'data': [] });
     }
-    return res.status(HTTP_RESPONSE_CODE.CREATED).json({ 'success': true, 'msg': `Note ${noteTitle} ${APP_SUCCESS_MESSAGE.objectCreated}` });
 }
 
 const getAllNotes = async (req, res) => {
@@ -67,6 +68,8 @@ const getNote = async (req, res) => {
         const { noteId } = req.params;
         const note = await Notes.findOne({ user: reqUser._id, _id: noteId }).select('_id title body parentFolder').exec();
 
+        if (!note) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ success: false, 'msg': `Note ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
+
         return res.status(HTTP_RESPONSE_CODE.OK).json({ success: true, 'msg': `Note ${APP_SUCCESS_MESSAGE.objectFound}`, 'data': note });
 
     } catch (error) {
@@ -87,6 +90,9 @@ const deleteNote = async (req, res) => {
 
         const { noteId } = req.params;
         const note = await Notes.findOne({ user: reqUser._id, _id: noteId }).exec();
+
+        if (!note) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ success: false, 'msg': `Note ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
+
         if (note.parentFolder !== null) {
             const parentFolder = await Folders.findOne({ user: reqUser._id, _id: note.parentFolder }).exec();
             parentFolder.notes.pull(note._id);
@@ -95,7 +101,7 @@ const deleteNote = async (req, res) => {
 
         await Notes.findByIdAndDelete(note._id);
 
-        return res.status(HTTP_RESPONSE_CODE.OK).json({ 'success': true, 'msg': `Note with ${noteId} Deleted successfully.`, 'data': [] });
+        return res.status(HTTP_RESPONSE_CODE.OK).json({ 'success': true, 'msg': `Note with id ${noteId} deleted successfully.`, 'data': [] });
 
     } catch(error) {
         if (error.name === "CastError") return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false, 'msg': `Note ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
@@ -165,7 +171,6 @@ const updateNote = async (req, res) => {
     if (title === undefined && body === undefined) return res.status(HTTP_RESPONSE_CODE.NO_CONTENT).json({'success': true, 'msg': 'Nothing to be updated.', data: []});
 
     try {
-        // const note = await Notes.findOne({ user: reqUser._id, _id: noteId }).exec();
         if (title) updates.title = title.trim();
         if (body !== undefined) updates.body = body.trim();
 
@@ -178,7 +183,8 @@ const updateNote = async (req, res) => {
         return res.status(HTTP_RESPONSE_CODE.OK).json({success:true, 'msg': `Note with id ${updatedNote._id} ${APP_SUCCESS_MESSAGE.objectUpdated}`, data: updatedNote});
 
     } catch (error) {
-        if (error.name === "CastError") return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false, 'msg': `Note ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
+        if (error.name === "CastError" || error.name === "TypeError") return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false, 'msg': `Note ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
+        return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({success: false, 'msg': `${error}`, data: []});
     }
 
 }
