@@ -25,6 +25,13 @@ app.use('/api/v1/login', require('./routes/auth/login'));
 app.use('/api/v1/refresh', require('./routes/auth/refresh'));
 app.use('/api/v1/logout', require('./routes/auth/logout'));
 
+// Health check, to see if everything is okay
+app.get("/", (_, res) => {
+    return res.status(200).json({
+        status: "Healthy!"
+    });
+});
+
 // to be protected
 app.use(authenticateUser);
 app.use('/api/v1/notes', require('./routes/api/notes'));
