@@ -11,8 +11,7 @@ const JoiRegErrs = (fieldName, min, max) => {
     else if (fieldName === 'password')
         Object.assign(retObject, {"string.pattern.base": `${fieldName} should have at least 1 number, uppercase, lowercase, and any of the following characters: ~\`!@#$%^&*()_-+={[}]|:;"'<,>.?/`})
     else if (fieldName === 'username')
-        Object.assign(retObject, {"string.pattern.base": `${fieldName} cannot start with number or special character, and cannot include whitespaces. 
-                                                          Supported special character: _`})
+        Object.assign(retObject, {"string.pattern.base": `${fieldName} cannot start with number, and cannot include whitespaces. Supported special character: _`})
 
     return retObject;
 }
