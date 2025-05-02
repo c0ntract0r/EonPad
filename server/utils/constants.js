@@ -27,13 +27,13 @@ const APP_ERROR_MESSAGE = {
     unauthorized: "Operation not permitted.",
     noValidUser: "Sorry, User not found. May be permanently deleted",
     badRequest: "Request is invalid: ",
-    notFound: "Not found. Please try again",
+    notFound: "not found. Please try again",
     conflictError: "already exists. Please try another",
     forbiddenError: "Can't access resource. Operation forbidden."
 };
 const REGULAR_EXPRESSIONS = Object.freeze({
     RE_NAME_SURNAME: /^[a-z ,.'-]+$/,
-    RE_USER: /^[a-zA-Z][a-zA-Z0-9]*(?:_[a-zA-Z0-9]+)*$/,
+    RE_USER: /^[a-zA-Z][a-zA-Z0-9_]*$/,
     RE_PASSWORD: /^(?=.*[A-Z])(?=.*[a-z])(?=.*[~`!@#$%^&*()_+\-=\[\]{}\\|:;"'<,>.?/])(?=.*[0-9])./
 });
 
