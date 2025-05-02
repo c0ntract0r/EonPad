@@ -1,6 +1,6 @@
 # Eonpad
 
-Eonpad is a lightweight and simple note-taking hierarchical application, created as my first fullstack Application. My main motivation came from [Simplenote](https://simplenote.com/). If you are looking for comprehensive note solutions, where many people have contributed on one project, this is not for you. Look for alternatives.
+Eonpad is a lightweight and simple note-taking hierarchical application, created as my first fullstack Application. My main motivation came from [Simplenote](https://simplenote.com/). If you are looking for a comprehensive note solution, where many people have contributed on one project, this is not for you. Look for alternatives.
 
 ## Features
 * **Note Management:** Create, read, update, delete notes.
