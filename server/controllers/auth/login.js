@@ -19,8 +19,8 @@ const loginHandler = async (req, res) => {
     }
 
     // pass in username & user_id as well, for creating JWT tokens
-    const accessToken = genToken(user._id, user.username ,'a');
-    const newRefreshToken = genToken(user._id, user.username, 'r');
+    const accessToken = genToken(user._id, user.username, process.env.JWT_A_TTL);
+    const newRefreshToken = genToken(user._id, user.username, process.env.JWT_R_TTL);
 
     let newRefreshTokenArray =
         !cookies?.refresh_jwt
@@ -43,7 +43,7 @@ const loginHandler = async (req, res) => {
     user.refreshToken = [...newRefreshTokenArray, newRefreshToken];
     await user.save();
     // send refresh cookie as HTTPOnly, so that can't be accessed with javascript
-    res.cookie('refresh_jwt', newRefreshToken, { httpOnly: true, maxAge: 5*60*1000 });
+    res.cookie('refresh_jwt', newRefreshToken, { httpOnly: true, maxAge: parseInt(process.env.COOKIE_MAX_AGE, 10) });
     return res.status(HTTP_RESPONSE_CODE.OK).json({ 'success': true, 'msg': APP_SUCCESS_MESSAGE.userAuthenticated, 'data': {
         username: user.username,
         user_token: {accessToken}
