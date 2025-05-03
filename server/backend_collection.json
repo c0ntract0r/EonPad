@@ -1,0 +1,570 @@
+{
+	"info": {
+		"_postman_id": "c65f024b-213f-49e0-b476-053f3998a686",
+		"name": "Eonpad",
+		"description": "The following documentation is created for other people to test and give me feedback about the backend.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37555393"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "POST-register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Test\",\n    \"lastName\": \"User\",\n    \"username\": \"testuser\",\n    \"password\": \"Qwerty.1234\",\n    \"confirmPassword\": \"Qwerty.1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/api/v1/register",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"register"
+							]
+						},
+						"description": "Register a new user. Fields: `firstName, lastName, username, password, confirmPassword`. All of the fields are required.\n\nField-specific requirements:\n\n- First and Last names should have no numbers, and can only pass these special characters: `,.'-`. _First name_ field length: 2 to 30 characters. _Last name_ field length: 2 to 45 characters.\n    \n- Username should not start with numbers. Supported special character: `_`. Field length: 4 to 34 characters\n    \n- Passwords should have at least one uppercase, lowercase, numeric, and a special characters. Most of special characters are supported. Field length: 8 to 24 characters.\n    \n\nUsernames are unique, so if you try to create a username that exists, you will get error."
+					},
+					"response": []
+				},
+				{
+					"name": "POST-login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Qwerty.1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/api/v1/login",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						},
+						"description": "Login with created username and password. Passwords are hashed and salted inside database. Upon successful login, you receive a cookie containing Refresh token, and a short-time period access token is issued to access protected resources."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/api/v1/logout/",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"logout",
+								""
+							]
+						},
+						"description": "Invalidate refresh token, delete cookie and log current user out."
+					},
+					"response": []
+				},
+				{
+					"name": "GET refresh route",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/api/v1/refresh",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"refresh"
+							]
+						},
+						"description": "After your refresh token expires, issue a `GET` request to this route to get a new access token and continue."
+					},
+					"response": []
+				}
+			],
+			"description": "Folder includes authentication and authorization related fields: register, login, logout and refresh. Authorization is implemented via JWT tokens. If you want to change access and refresh token lifetimes, do so from .env file, modifying the variables `JWT_A_TTL` and `JWT_R_TTL`."
+		},
+		{
+			"name": "POST",
+			"item": [
+				{
+					"name": "Create new note",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"noteTitle\": \"Product note\",\n    \"noteBody\" : \"A simple note about wazuh I should keep track about\",\n    \"folderId\": \"6815d8e715de98d2d04015a5\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/api/v1/notes",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes"
+							]
+						},
+						"description": "Create a new note. Required field: `noteTitle`. Optional fields: `noteBody`, `folderId`. If `folderId` is provided, the note will be created inside the folder of the given Id. If the folder does not exists, an error will be returned. If none is provided, by default a note is not inside any folder."
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Folder",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "Bearer <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"folderName\": \"doctor\",\n    \"parentFolderName\": \"root\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/api/v1/folders",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders"
+							]
+						},
+						"description": "Create a new folder. Required field: `folderName`. Optional field: `parentFolderName`. if parentFolderName is provided, the folder will be created inside the folder of the given name. If it does not exist, response with an error. If none is provided, by default the folder will be created with parendId `null`(that being a root folder).\n\nFolder names are unique per user on the same level. For example: you cannot have 2 folders with name _root_ in the same level, but you can have _root/root_. Folder names are case-sensitive. You can have a folder _doctor_ and _DoCtOr_ without any problem."
+					},
+					"response": []
+				}
+			],
+			"description": "From this point onward(except health check), you must provide an `Authorization` header with value `Bearer` . Replace `ACCESS_TOKEN` with the token you got in response when logging in.  \nThe following endpoints are for creating a new note and folder."
+		},
+		{
+			"name": "GET",
+			"item": [
+				{
+					"name": "GET-all-notes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{SERVER}}/api/v1/notes",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes"
+							]
+						},
+						"description": "Get all notes of a given user."
+					},
+					"response": []
+				},
+				{
+					"name": "GET-single-note",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{SERVER}}/api/v1/notes/<NOTE_ID>",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes",
+								"<NOTE_ID>"
+							]
+						},
+						"description": "Provide a param `NOTE_ID` to get only one note."
+					},
+					"response": []
+				},
+				{
+					"name": "GET-all-folders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "BEARER <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{SERVER}}/api/v1/folders",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders"
+							]
+						},
+						"description": "Get all folders of a given user."
+					},
+					"response": []
+				},
+				{
+					"name": "GET-single-folder",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "BEARER <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{SERVER}}/api/v1/folders/<FOLDER_ID>",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders",
+								"<FOLDER_ID>"
+							]
+						},
+						"description": "Provide a param `FOLDER_ID` to get only one folder."
+					},
+					"response": []
+				}
+			],
+			"description": "Get all of the objects, or one object at a time."
+		},
+		{
+			"name": "PATCH",
+			"item": [
+				{
+					"name": "PATCH-single-note",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "BEARER <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test, if title is changed for the user test\",\n    \"body\": \"Naturally, body should also be tested to see, if it's updating.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/api/v1/notes/<NOTE_ID>",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes",
+								"<NOTE_ID>"
+							]
+						},
+						"description": "Provide a param `NOTE_ID` to update a note's body/title.\n\nFields `title`, `body` can be provided and none of them is mandatory. It none is provided, nothing is updated. Each of them update a note's title and body respectively. You can provide one or the other."
+					},
+					"response": []
+				},
+				{
+					"name": "RENAME-A-Folder",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"hello\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/api/v1/folders/<FOLDER_ID>",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders",
+								"<FOLDER_ID>"
+							]
+						},
+						"description": "The following endpoint is created for renaming a folder. is provided via params.\n\nIn body, a field `name` should be provided with the value that you want to rename your folder to. If none provided, name stays the same."
+					},
+					"response": []
+				}
+			],
+			"description": "These endpoints are for updating notes and folders. Move is a separate one, and is not in this scope."
+		},
+		{
+			"name": "DELETE",
+			"item": [
+				{
+					"name": "DELETE-existing-note",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{SERVER}}/api/v1/notes/<NOTE_ID>",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes",
+								"<NOTE_ID>"
+							]
+						},
+						"description": "Provide a `NOTE_ID` param to delete a specific note."
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE-existing-folder",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/api/v1/folders/FOLDER_ID?delContent=true",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders",
+								"FOLDER_ID"
+							],
+							"query": [
+								{
+									"key": "delContent",
+									"value": "true"
+								}
+							]
+						},
+						"description": "A mandatory `FOLDER_ID` should be provided to delete a note.  \n**IMPORTANT:** If you want to delete all of the content inside the folder recursively, you should also provide a param `DelContent=true` , which will delete all of child folders and notes as well.\n\nBy default, only the folder with given ID is deleted, and if folder contains other folders/notes, they are moved to their parent's location, or if no parent exist, become root(where parentId=null)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "MOVE",
+			"item": [
+				{
+					"name": "MOVE-note",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"newParentId\":\"6815c8352e4061826c911af6\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/api/v1/notes/move/NOTE_ID",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes",
+								"move",
+								"NOTE_ID"
+							]
+						},
+						"description": "A `NOTE_ID` param should be provided, alongside with a JSON field `newParentId` to move a note to another folder.\n\n**IMPORTANT**: If no `newParentId` field is provided, a note is moved to root."
+					},
+					"response": []
+				},
+				{
+					"name": "MOVE-Folder",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer <ACCESS_TOKEN>",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // If newParentId not provided, by default no parent folder will be set\n    \"newParentId\": \"6815c8352e4061826c911af6\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/api/v1/folders/move/FOLDER_ID",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders",
+								"move",
+								"FOLDER_ID"
+							]
+						},
+						"description": "A `FOLDER_ID` param should be provided, alongside with a JSON field `newParentId` to move a folder to another folder.\n\n**IMPORTANT**: If no `newParentId` field is provided, a folder is move to root."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health-check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}/",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Check if server status is healthy. Very simple one indeed."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "SERVER",
+			"value": "http://localhost:3000",
+			"type": "default"
+		}
+	]
+}
