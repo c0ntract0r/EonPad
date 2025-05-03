@@ -35,8 +35,8 @@ const createFolder = async (req, res) => {
         const result = await newFolder.save();
 
         if (parentFolderId) {
-            const getParentFolder = await Folders.findById(parentFolderId);
-            const childFolder = await Folders.findOne({ name: folderName })
+            const getParentFolder = await Folders.findOne({ user: reqUser._id, _id: parentFolderId }).exec();
+            const childFolder = await Folders.findOne({ user: reqUser._id, name: folderName }).exec();
             getParentFolder.children.push(childFolder._id);
 
             await getParentFolder.save();
@@ -83,6 +83,8 @@ const getFolder = async (req, res) => {
 
         const { folderId } = req.params;
         const folder = await Folders.findOne({user: reqUser, _id: folderId}).select('_id name children notes parentId').exec();
+
+        if (!folder) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false, 'msg': `Folder ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
 
         return res.status(HTTP_RESPONSE_CODE.OK).json({'success': true, 'msg': `Folder ${APP_SUCCESS_MESSAGE.objectFound}`, 'data': folder});
 
@@ -135,11 +137,13 @@ const deleteFolder = async (req, res) => {
 
         const reqFolder = await Folders.findOne({ user: req.user.user_id, _id: folderId }).select('_id parentId notes children').exec();
 
+        if (!reqFolder) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false, 'msg': `Folder ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
+
         // If not to delete content, then: Move child folders(and their contents) and notes 1 level up, and remove that child from parent 
         if ((!delContent) || (delContent.toLowerCase() !== 'true')) {
 
-            const parentFolder = (reqFolder.parentId !== null) ? await Folders.findById(reqFolder.parentId) : null ;
-
+            const parentFolder = (reqFolder.parentId !== null) ? await Folders.findOne({ user: req.user.user_id, _id: reqFolder.parentId }) : null;
+            
             // if not null, remove the corresponding child folder from 
             if (parentFolder) {
                 parentFolder.children.pull(folderId);
@@ -176,8 +180,7 @@ const deleteFolder = async (req, res) => {
                 }
             }
             
-
-            await Folders.findByIdAndDelete(folderId);
+            await Notes.findOneAndDelete({ user: reqUser._id, _id: folderId });
 
             return res.status(HTTP_RESPONSE_CODE.OK).json({'success': true, 'msg': 'Folder deleted. Child objects and notes remain.', 'data': reqFolder});
         }
@@ -185,7 +188,7 @@ const deleteFolder = async (req, res) => {
         // In case, that delContent IS SET TO TRUE
         const recursiveDelete = async (targetFolder) => {
 
-            const folder = await Folders.findById(targetFolder).exec();
+            const folder = await Folders.findOne({ user: req.user.user_id, _id: targetFolder }).exec();
 
             const childFolderIds = folder.children || [];
             if (childFolderIds.length > 0) {
@@ -204,7 +207,7 @@ const deleteFolder = async (req, res) => {
                 }
             }
 
-            await Folders.findByIdAndDelete(targetFolder);
+            await Folders.findOneAndDelete({ user: reqUser._id, _id: targetFolder });
         }
 
         // if a parent folder exists, clean that up
@@ -238,13 +241,16 @@ const moveFolder = async (req, res) => {
     const newParent = newParentId === 'null' || !newParentId ? null : newParentId;
 
     if (newParent) {
-        parentDoc = await Folders.findById(newParentId).exec();
-        if (!parentDoc) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false ,'msg': `folder ${APP_ERROR_MESSAGE.notFound}`, data: null});
+        parentDoc = await Folders.findOne({ user: reqUser._id, _id: newParentId }).exec();
+        if (!parentDoc) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false ,'msg': `Parent folder ${APP_ERROR_MESSAGE.notFound}`, data: []});
     }
 
     try {
 
         const folder = await Folders.findOne({ user: reqUser._id, _id: folderId }).exec();
+
+        if (!folder) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false ,'msg': `Folder ${APP_ERROR_MESSAGE.notFound}`, data: []});
+
         if (folder.parentId) {
             const oldParent =  await Folders.findOne({ user: reqUser._id, _id: folder.parentId }).exec();
             oldParent.children.pull(folder._id);
@@ -253,6 +259,7 @@ const moveFolder = async (req, res) => {
         }
 
         folder.parentId = newParent;
+
         if (parentDoc) {
             parentDoc.children.push(folder._id);
             await parentDoc.save();
