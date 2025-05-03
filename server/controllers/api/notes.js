@@ -13,7 +13,7 @@ const createNote = async (req, res) => {
     const parentFolder = folderId === 'null' || !folderId ? null : folderId;
     
     if (parentFolder) {
-        const parentResult = await Folders.findById(folderId).exec();
+        const parentResult = await Folders.findOne({ user: reqUser._id, _id: folderId }).exec();
         if (!parentResult) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false ,'msg': `folder ${APP_ERROR_MESSAGE.notFound}`, data: null});
     }
     try {
@@ -28,7 +28,7 @@ const createNote = async (req, res) => {
         const result = await newNote.save();
 
         if (parentFolder) {
-            const parentResult = await Folders.findById(folderId).select('notes').exec();
+            const parentResult = await Folders.findOne({ user: reqUser._id, _id: folderId }).select('notes').exec();
             parentResult.notes.push(result._id);
 
             await parentResult.save();
@@ -99,7 +99,7 @@ const deleteNote = async (req, res) => {
             await parentFolder.save();
         }
 
-        await Notes.findByIdAndDelete(note._id);
+        await Notes.findOneAndDelete({ user: reqUser._id, _id: note._id });
 
         return res.status(HTTP_RESPONSE_CODE.OK).json({ 'success': true, 'msg': `Note with id ${noteId} deleted successfully.`, 'data': [] });
 
@@ -122,12 +122,14 @@ const moveNote = async (req, res) => {
     const newParent = newParentId === 'null' || !newParentId ? null : newParentId;
 
     if (newParent) {
-        parentDoc = await Folders.findById(newParentId).exec();
+        parentDoc = await Folders.findOne({ user: reqUser._id, _id: newParentId }).exec();
         if (!parentDoc) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ 'success': false ,'msg': `folder ${APP_ERROR_MESSAGE.notFound}`, data: null});
     }
 
     try {
         const note = await Notes.findOne({ user: reqUser._id, _id: noteId }).select('_id title body parentFolder').exec();
+
+        if (!note) return res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json({ success: false, 'msg': `Note ${APP_ERROR_MESSAGE.notFound}`, 'data': [] });
 
         // if note was already inside a folder
         if (note.parentFolder) {
