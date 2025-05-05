@@ -3,7 +3,10 @@ import { InputFields, Footer } from "../../Components";
 import userSchema from "../../utils/registerValidation";
 import * as Yup from 'yup';
 import axios from 'axios';
-import './RegisterPage.css'
+import './RegisterPage.css';
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { register } from "../../utils/api";
 
 // should be placed somewhere else, clutters like hell
 const registerUrl = "http://localhost:3000/register"
@@ -26,12 +29,22 @@ const initValues = {
 // FUNCTION START
 const RegisterPage = () => {
 
+  const navigate = useNavigate();
   const [values, setValues] = useState(initValues)
   const [errors, setErrors] = useState(initValues);
   // enable only when every field value is correct
   const [disableButton, setDisableButton] = useState(true);
   // keep track if any errors have been encountered
   const [errorState, setErrorState] = useState(false);
+
+  const { mutate: createAccount } = useMutation({
+    mutationFn: register,
+    onSuccess: () => {
+      navigate("/login", {
+        replace: false
+      })
+    }
+  });
 
   const registerHandler = async () => {
     try {
@@ -120,7 +133,6 @@ const RegisterPage = () => {
         <a className="anchor" href="/login">Already have an account? Sign in.</a>
       </div>
     </main>
-    <Footer />
     </>
   )
 }

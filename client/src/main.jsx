@@ -3,6 +3,9 @@ import './index.css'
 import { StrictMode } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { RegisterPage, LoginPage, DashboardPage } from './Pages'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import queryClient from './services/queryClient';
+import { QueryClientProvider } from "@tanstack/react-query"
 
 // define all front routes for the page
 const router = createBrowserRouter([{
@@ -12,12 +15,19 @@ const router = createBrowserRouter([{
   {
     path: '/login',
     element: <LoginPage />
+  },
+  {
+    path: '/',
+    element: 'puc'
   }
 ])
 
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-    <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ReactQueryDevtools position="bottom-right" initialIsOpen={false} />
+      </QueryClientProvider>
     </StrictMode>
 )

@@ -66,6 +66,7 @@ main {
 
 .anchor {
     display: flex;
+    justify-content: center;
     margin-top: 1rem;
     color: #141413;
     font-family: "Inter", sans-serif;

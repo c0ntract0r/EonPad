@@ -4,13 +4,13 @@ import constants from './constants';
 // define error messages here, hopefully cluttering things less
 const errorMessages = {
     firstLastName: [ 'cannot be empty',
-                'should be at most 35 characters long', 
+                'should be at most 30 characters long', 
                 'only letters, spaces, hyphens(-), apostrophes(\'), dots(.) and hyphens(-) allowed'],
     username: [ 'Username cannot be empty',
-                'Username must be between 4 and 24 characters long.',
-                'Username can contain only letters, numbers and underscores'],
+                'Username must be between 4 and 34 characters long.',
+                'Username can contain only include letters, numbers and underscores'],
     password: [ 'Password cannot be empty',
-                'Password must be between 8 to 32 characters long',
+                'Password must be between 8 to 24 characters long',
                 'Password must contain at least one uppercase, lowercase, numeric and one (~!@#$%^&*()_+-={}\|:;"\'<,>.?/) special character'
      ],
      confirmPassword: [
