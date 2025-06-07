@@ -1,25 +1,77 @@
-/* html {
-  box-sizing: border-box;
-  font-size: 16px;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+
+/* TailwindCSS customization */
+@theme {
+    --breakpoint-*: initial;
+    --breakpoint-sm: 480px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 976px;
+
+    /* Extended colors, not available by default */
+    --color-background: #faf9f5;
+    --color-primary: #3A6EA5;
+    --color-secondary: #004E98;
 }
 
-*, *:before, *:after {
-  box-sizing: inherit;
+/* DaisyUI plugin configuration: was the custom one that I created. Not in use */
+
+@plugin "daisyui" {
+    themes: autumn --default, business;
 }
 
-body, h1, h2, h3, h4, h5, h6, p, ol, ul {
-  margin: 0;
-  padding: 0;
-  font-weight: normal;
+@plugin "daisyui/theme" {
+    name: "autumn";
+    --color-primary: #141413;
+    --color-accent: #826a5c;
 }
 
-ol, ul {
-  list-style: none;
+@plugin "daisyui/theme" {
+    name: "business";
+    --color-primary: #D3CFC9;
+    --color-accent: #924E30;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
+/* Ghost button color changed */
+[data-theme="autumn"] .btn-ghost {
+    border: none !important;
+    outline: none !important;
+    transition: background-color 0.2s ease;
+  }
+
+[data-theme="autumn"] .btn-ghost:hover {
+    background-color: #faf9f5;
+    box-shadow: none;
+    outline: none;
+    border: none;
 }
 
+[data-theme="autumn"] .btn-ghost:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+
+
+/* Daisy-ui configured for full theme */
+[data-theme="autumn"] body,
+[data-theme="autumn"] .bg-base {
+  background-color: #FAF9F5 !important;
+}
+
+
+
+/* Default css going here */
+:root {
+    font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+
+/* Currently, I do not reset the CSS. It causes many issues */
+/* * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 */

@@ -1,11 +1,25 @@
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import { StrictMode } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { RegisterPage, LoginPage, DashboardPage } from './Pages'
+import { ToastContainer } from 'react-toastify';
+import { store } from './store';
+import { Provider } from 'react-redux';
+import './index.css';
+import App from './App';
+
+
+createRoot(document.getElementById('root')).render(
+  <Provider store={store}>
+    <App />
+    <ToastContainer position='top-center' />
+  </Provider>
+)
+
+/* 
+
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import queryClient from './services/queryClient';
 import { QueryClientProvider } from "@tanstack/react-query"
+
+
 
 // define all front routes for the page
 const router = createBrowserRouter([{
@@ -16,10 +30,6 @@ const router = createBrowserRouter([{
     path: '/login',
     element: <LoginPage />
   },
-  {
-    path: '/',
-    element: 'puc'
-  }
 ])
 
 
@@ -31,3 +41,5 @@ createRoot(document.getElementById('root')).render(
       </QueryClientProvider>
     </StrictMode>
 )
+
+*/
