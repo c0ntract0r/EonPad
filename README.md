@@ -9,11 +9,5 @@ Eonpad is a lightweight and simple note-taking hierarchical application, created
 * **Cloud storage:** You can store your notes in cloud, and access them from anywhere.
 
 ## Status
-Currently: Backend API is at almost-ready state, while frontend is being developed. Any help regarding the code and constructive criticism will be much appreciated. I'm sharing this to get feedback regarding my API and schema design choices, improve security & quality while working on frontend.
+Backend API is completely ready, even to the point I can say it is ready to be published to the world, but the Frontend remains unfinished for unknown period of time. Maybe I will be back to it. But even in that state, a lot is ready: The landing page, login/registration logic, route protection, dashboard UI, some backend calls, state management, etc...
 
-## Setup
-
-## Licence
-
-
-*Disclaimer: When I fully finish this project, there will be no charging for storing notes in cloud, but please, be aware: If by some magic, more people start using this, I will continue the development, and hence, there will be introduced a small monthly subscription for about 0.99$ for a month for keeping notes. But, before that, you buying me a coffee will be very much helpful and keep me  motivated :D*  
