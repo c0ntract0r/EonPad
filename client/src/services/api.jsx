@@ -2,12 +2,11 @@ import axios from 'axios';
 
 const options = {
     baseURL: import.meta.env.VITE_BACKEND_API_URL,
-    withCredentials: true
+    withCredentials: true,
 }
 
-console.log(options.baseURL);
-
 const API = axios.create(options);
+
 
 API.interceptors.response.use(
     // every time we get a response, get data immediately
@@ -17,5 +16,6 @@ API.interceptors.response.use(
         return Promise.reject({ status, ...data });
     }
 )
+
 
 export default API;
