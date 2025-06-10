@@ -1,5 +1,11 @@
-import InputFields from "./Auth-Fields/InputFields";
-import Footer from "./Footer/Footer";
-
-
-export { InputFields, Footer };
+// import InputFields from "./Auth-Fields/InputFields";
+export { default as FormInput } from "./FormInput";
+export { default as SubmitBtn } from './SubmitBtn';
+export { default as Navbar } from './Navbar';
+export { default as Hero } from './Hero';
+export { default as Features } from './Features';
+export { default as Footer} from './Footer';
+export { default as NoteEditor } from './NoteEditor';
+export { default as DraggableNote } from './DraggableNote';
+export { default as DroppableFolder } from './DroppableFolder';
+export { default as ConfirmationModal } from './ConfirmationModal';
