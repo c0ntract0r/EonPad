@@ -3,7 +3,6 @@ import { Form, Link, redirect, useNavigate } from 'react-router';
 import { login } from "../utils/api";
 import { toast } from "react-toastify";
 import { loginUser } from "../features/user/userSlice";
-import { useDispatch } from "react-redux";
 
 // Create the login action
 export const action = (store) => async ({request}) => {
@@ -14,7 +13,7 @@ export const action = (store) => async ({request}) => {
     const response = await login(data);
     store.dispatch(loginUser(response.data));
     toast.success('Logged in successfully!');
-    return redirect('/');
+    return redirect('/dashboard');
   } 
   catch(error) {
     toast.error(error.msg);

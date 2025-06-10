@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import './RegisterPage.css';
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { register } from "../../utils/api";
 
 // should be placed somewhere else, clutters like hell
