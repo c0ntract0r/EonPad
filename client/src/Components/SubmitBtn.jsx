@@ -4,8 +4,6 @@ const SubmitBtn = ({ text, disabled }) => {
     const navigation = useNavigation();
     const isSubmitting = navigation.state === 'submitting';
     const isDisabled = disabled || isSubmitting;
-
-    console.log(isDisabled);
     
     return (
       <button 
